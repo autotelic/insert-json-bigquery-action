@@ -24,7 +24,7 @@ async function run() {
     const projectName = github.context.repository
     const branch = github.context.ref_name
     const sha = github.context.sha
-    const reportTime = github.context.event.created_at
+    const reportTime = github.context.payload.created_at
 
     const rows = [
       {

@@ -1,68 +1,55 @@
-# Create a JavaScript Action
+# Insert JSON BigQuery Action
 
-<p align="center">
-  <a href="https://github.com/actions/javascript-action/actions"><img alt="javscript-action status" src="https://github.com/actions/javascript-action/workflows/units-test/badge.svg"></a>
-</p>
+A Github JavaScript action to insert a supplied JSON to a BigQuery Table.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+## Usage
 
-This template includes tests, linting, a validation workflow, publishing, and versioning guidance.
+You can consume this action by referencing the v1 branch
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+```yaml
+    steps:
+      - name: Upload Report to BigQuery
+        uses: autotelic/insert-json-bigquery-action@v1
+        with:
+          projectId: gcp-project-id
+          datasetId: gcp-dataset-id
+          tableId: gcp-table-id
+          jsonFilePath: ./path/to/data.json
+```
 
-## Create an action from this template
+All inputs are *required* and the calling workflow *must* be authenticated with GCP. See [GCP Authentication](#gcp-authentication)
 
-Click the `Use this Template` and provide the new repo details for your action
+Input | Required | Description
+--- | --- | ---
+`projectId` | **true** | The target BigQuery project id
+`datasetId` | **true** | The target BigQuery dataset id
+`tableId` | **true** | The target BigQuery table id
+`jsonFilePath` | **true** | Path and filename of the JSON file to insert
 
-## Code in Main
+### GCP Authentication
+
+Note: The risk-engine-upload-hotspot-bigquery-action *requires* authentication with GCP *prior* to execution. The [google-github-actions/auth](https://github.com/google-github-actions/auth) action can be used to authenticate.
+
+This action must be supplied with a `credentials_json` Github secret which contains a json credential file for a GCP service account with sufficient access to the target project, dataset, and table.
+
+e.g.
+
+```yaml
+    steps:
+      - name: Authenticate with GCP
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
+```
+
+## Local Development
 
 Install the dependencies
 
 ```bash
 npm install
 ```
-
-Run the tests :heavy_check_mark:
-
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-const core = require('@actions/core');
-...
-
-async function run() {
-  try {
-      ...
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
 
 ## Package for distribution
 
@@ -84,9 +71,9 @@ git add dist
 
 ## Create a release branch
 
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
+Users shouldn't consume the action from main since that would be latest code and actions can break compatibility between major versions.
 
-Checkin to the v1 release branch
+Checkout to the v1 release branch
 
 ```bash
 git checkout -b v1
@@ -96,21 +83,3 @@ git commit -a -m "v1 release"
 ```bash
 git push origin v1
 ```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket:
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Usage
-
-You can now consume the action by referencing the v1 branch
-
-```yaml
-uses: actions/javascript-action@v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:

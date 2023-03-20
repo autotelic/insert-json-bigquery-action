@@ -1,13 +1,21 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Upload Hotspot report to BigQuery'
+description: 'Formats and inserts a new hotspot detection report to BigQuery'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  application_credentials:
+    description: 'application_credentials'
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  projectId:
+    description: 'projectId'
+    required: true
+  datasetId:
+    description: 'datasetId'
+    required: true
+  tableId:
+    description: 'tableId'
+    required: true
+  reportFilename:
+    description: 'Report filename'
+    required: true
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -67817,11 +67817,11 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
+const core = __nccwpck_require__(2186)
+const github = __nccwpck_require__(5438)
 
-const { BigQuery } = __nccwpck_require__(5390);
-const fs = __nccwpck_require__(7147);
+const { BigQuery } = __nccwpck_require__(5390)
+const fs = __nccwpck_require__(7147)
 
 async function run() {
   try {
@@ -67861,20 +67861,23 @@ async function run() {
     .table(tableId)
     .insert(rows)
 
-    core.notice(`Inserted report ${reportPath} into BigQuery Table ${tableId}`);
+    core.notice(`Inserted report ${reportPath} into BigQuery Table ${tableId}`)
 
   } catch (error) {
-    if (!error.message) {
-      core.error('Something went wrong. Check Debug logs for details')
+    let { message } = error
+
+    // Check for an Error missing the standard error.message property
+    if (!message) {
+      message = 'Something went wrong. Check Debug logs for details'
+      // Debug log the entire error object for troubleshooting
       core.debug(JSON.stringify(error, null, 2))
-    } else {
-      core.error(error.message)
     }
-    core.setFailed(error.message);
+
+    core.setFailed(message)
   }
 }
 
-run();
+run()
 
 })();
 

@@ -1,8 +1,8 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require('@actions/core')
+const github = require('@actions/github')
 
-const { BigQuery } = require('@google-cloud/bigquery');
-const fs = require('fs');
+const { BigQuery } = require('@google-cloud/bigquery')
+const fs = require('fs')
 
 async function run() {
   try {
@@ -42,17 +42,20 @@ async function run() {
     .table(tableId)
     .insert(rows)
 
-    core.notice(`Inserted report ${reportPath} into BigQuery Table ${tableId}`);
+    core.notice(`Inserted report ${reportPath} into BigQuery Table ${tableId}`)
 
   } catch (error) {
-    if (!error.message) {
-      core.error('Something went wrong. Check Debug logs for details')
+    let { message } = error
+
+    // Check for an Error missing the standard error.message property
+    if (!message) {
+      message = 'Something went wrong. Check Debug logs for details'
+      // Debug log the entire error object for troubleshooting
       core.debug(JSON.stringify(error, null, 2))
-    } else {
-      core.error(error.message)
     }
-    core.setFailed(error.message);
+
+    core.setFailed(message)
   }
 }
 
-run();
+run()

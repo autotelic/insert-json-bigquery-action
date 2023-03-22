@@ -1,20 +1,17 @@
 name: 'Upload Hotspot report to BigQuery'
 description: 'Formats and inserts a new hotspot detection report to BigQuery'
 inputs:
-  application_credentials:
-    description: 'application_credentials'
-    required: true
   projectId:
-    description: 'projectId'
+    description: 'The target BigQuery project id'
     required: true
   datasetId:
-    description: 'datasetId'
+    description: 'The target BigQuery dataset id'
     required: true
   tableId:
-    description: 'tableId'
+    description: 'The target BigQuery table id'
     required: true
-  reportFilename:
-    description: 'Report filename'
+  reportPath:
+    description: 'Path and filename of the code-complexity json report'
     required: true
 runs:
   using: 'node16'

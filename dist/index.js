@@ -67834,9 +67834,9 @@ async function run() {
     const bigqueryClient = new BigQuery({ projectId })
 
     // Get Report Data Inputs
-    const reportFilename = core.getInput('reportFilename')
+    const reportPath = core.getInput('reportPath')
 
-    const reportString = fs.readFileSync(reportFilename, 'utf8')
+    const reportString = fs.readFileSync(reportPath, 'utf8')
 
     // Define new data row values
     const projectName = github.context.payload.repository.name
@@ -67861,7 +67861,7 @@ async function run() {
     .table(tableId)
     .insert(rows)
 
-    core.notice(`Inserted report ${reportFilename} into BigQuery Table ${tableId}`);
+    core.notice(`Inserted report ${reportPath} into BigQuery Table ${tableId}`);
 
   } catch (error) {
     if (!error.message) {

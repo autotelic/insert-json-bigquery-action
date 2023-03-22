@@ -1,5 +1,105 @@
 # Risk Engine Hotspot Detection Report BigQuery Upload Action
 
+A Github JavaScript action to insert a supplied Json report to a BigQuery Table.
+
+This action is used in the reusable workflow: [risk-engine-hotspot-detection-workflow](https://github.com/telus/risk-engine-hotspot-detection-workflow)
+
+This action is currently only designed to process and upload [code-complexity](https://github.com/simonrenoult/code-complexity#readme) json output reports along with associated metadata to a specific BigQuery schema.
+
+The expected BigQuery Table Schema is:
+
+```json
+[
+    {
+        "name": "projectName",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "branch",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "sha",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "reportTime",
+        "type": "TIMESTAMP",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "reportArray",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "name": "path",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "churn",
+                "type": "INTEGER",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "complexity",
+                "type": "INTEGER",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "score",
+                "type": "INTEGER",
+                "mode": "NULLABLE"
+            }
+        ]
+    }
+]
+```
+
+## Usage
+
+You can consume this action by referencing the v1 branch
+
+```yaml
+    steps:
+      - name: Upload Report to BigQuery
+        uses: telus/risk-engine-upload-hotspot-bigquery-action@v1
+        with:
+          projectId: gcp-project-id
+          datasetId: gcp-dataset-id
+          tableId: gcp-table-id
+          reportFilename: ./path/to/report.json
+```
+
+All inputs are *required* and the calling workflow *must* be authenticated with GCP. See [GCP Authentication](#gcp-authentication)
+
+Input | Required | Description
+--- | --- | ---
+`projectId` | **true** | The target BigQuery project id
+`datasetId` | **true** | The target BigQuery dataset id
+`tableId` | **true** | The target BigQuery table id
+`reportPath` | **true** | Path and filename of the code-complexity json report
+
+### GCP Authentication
+
+Note: The risk-engine-upload-hotspot-bigquery-action *requires* authentication with GCP *prior* to execution. The [google-github-actions/auth](https://github.com/google-github-actions/auth) action can be used to authenticate.
+
+This action must be supplied with a `credentials_json` Github secret which contains a json credential file for a GCP service account with sufficient access to the target project, dataset, and table.
+
+e.g.
+
+```yaml
+    steps:
+      - name: Authenticate with GCP
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.HOTSPOT_UPLOAD_GOOGLE_CREDENTIALS }}'
+```
 
 ## Local Development
 
@@ -8,48 +108,6 @@ Install the dependencies
 ```bash
 npm install
 ```
-
-Run the tests :heavy_check_mark:
-
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-const core = require('@actions/core');
-...
-
-async function run() {
-  try {
-      ...
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
 
 ## Package for distribution
 
@@ -71,9 +129,9 @@ git add dist
 
 ## Create a release branch
 
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
+Users shouldn't consume the action from main since that would be latest code and actions can break compatibility between major versions.
 
-Checkin to the v1 release branch
+Checkout to the v1 release branch
 
 ```bash
 git checkout -b v1
@@ -83,21 +141,3 @@ git commit -a -m "v1 release"
 ```bash
 git push origin v1
 ```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket:
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Usage
-
-You can now consume the action by referencing the v1 branch
-
-```yaml
-uses: actions/javascript-action@v1
-with:
-  milliseconds: 1000
-```
-
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:

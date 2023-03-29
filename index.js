@@ -1,5 +1,4 @@
 const core = require('@actions/core')
-const github = require('@actions/github')
 
 const { BigQuery } = require('@google-cloud/bigquery')
 const fs = require('fs')
